@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1482143837665.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "2B5DB5D1",
+    "lastKnownWriteTime" : 2334102060070273024,
+    "last_content_update" : 1482143837665,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "context" : "package:stats:::shapiro.test"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_code_browser"
+}
