@@ -1,0 +1,266 @@
+---
+title: "Descriptive Statistics Report"
+author: "Michał Siemiończyk"
+date: "10 marca 2017"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    fig_caption: yes
+    fig_height: 4.5
+    keep_tex: yes
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(gdata)
+library(e1071)
+
+
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Introduction
+
+The task was to analyze the W1_OcenyIlorazIntelZarobki.xlsx dataset.
+
+  * for each variable there was a descriptive (summary) analisys to be performed
+  * the modality of variables distribution has to be checked
+  * check if the variables have normal distribution
+  * draw histograms and boxplots and analize its distribution
+  * check for outstanding values (outliers)
+  * if there's a grouping variable 
+  - perform the task for each of them 
+  
+ (in Polish:Przeanalizuj załączone zbiory. Dla każdej zmiennej oblicz statystyki opisowe sprawdź modalność rozkładów sprawdź czy zmienne mają rozkład normalny narysuj histogramy narysuj wykresy "skrzynka z wąsami" i przeanalizuj rozkład, występowanie obserwacji odstających i ekstremalnych Jeśli w danych występuje zmienna grupująca powtórz zadanie w każdej z grup.
+ )
+ 
+ # Dataset
+ 
+```{r comment=NA, echo=TRUE, warning=FALSE}
+data = read.xls('W1_OcenyIlorazIntelZarobki.xlsx')
+```
+
+Dataset consists of 4 variables:
+
+  * zarobki - income 
+  * grupa - group (a groupping variable)
+  * iloraz_intelig - iq
+  * oceny - grades
+
+```{r comment=NA, echo=FALSE, warning=FALSE}
+head(data)
+```
+
+ 
+# Descriptive analisys
+The function ```opisowe_statystyki``` from ```functions.R``` was used to perform simple descriptive analisys.
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+source("../functions.R")
+```
+
+
+## Variable "IQ"
+### All IQ Data
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+iqData = data$iloraz_intelig
+```
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+summary(iqData)
+descriptive_statistics(iqData, "IQ variable")
+```
+
+```{r}
+par(mfrow=c(1,2))
+hist(iqData, plot = TRUE, main = "IQ")
+boxplot(iqData, main = "IQ", xlab="IQ") 
+```
+
+All samples for variable IQ result int P-value greater than $\alpha$ = 0.05 - therefore they have a normal distribution.
+
+### Group A
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+iqGroupAData = data$iloraz_intelig[data$grupa=='A']
+```
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+summary(iqGroupAData)
+descriptive_statistics(iqGroupAData, "IQ variable groupped for Group A")
+```
+
+```{r}
+par(mfrow=c(1,2))
+hist(iqGroupAData, plot = TRUE, main = "IQ - Group A")
+boxplot(iqGroupAData, main = "IQ - Group A", xlab="IQ - Group A") 
+```
+
+### Group B
+```{r comment=NA, echo=TRUE, warning=FALSE}
+iqGroupBData = data$iloraz_intelig[data$grupa=='B']
+```
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+summary(iqGroupBData)
+descriptive_statistics(iqGroupBData, "IQ variable groupped for Group B")
+```
+
+```{r}
+par(mfrow=c(1,2))
+hist(iqGroupBData, plot = TRUE, main = "IQ - Group B")
+boxplot(iqGroupBData, main = "IQ - Group B", xlab="IQ - Group B") 
+```
+
+## Grades
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+grades = data$oceny
+grades = grades[!is.na(grades)]
+```
+
+### Ungroupped data
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+summary(grades)
+descriptive_statistics(grades, "Grades variable for all samples")
+```
+
+```{r}
+par(mfrow=c(1,2))
+hist(grades, plot = TRUE, main = "Grades")
+boxplot(grades, main = "Grades", xlab="Grades") 
+```
+
+### Group A
+```{r comment=NA, echo=TRUE, warning=FALSE}
+gradesGroupA = data$oceny[data$grupa=='A']
+gradesGroupA = gradesGroupA[!is.na(gradesGroupA)]
+```
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+summary(gradesGroupA)
+descriptive_statistics(gradesGroupA, "Grades - Group  A")
+```
+
+```{r}
+par(mfrow=c(1,2))
+hist(gradesGroupA, plot = TRUE, main = "Grades - Group A")
+boxplot(gradesGroupA, main = "Grades - Group A", xlab="Grades - Group A") 
+```
+
+### Group B
+```{r comment=NA, echo=TRUE, warning=FALSE}
+gradesGroupB = data$oceny[data$grupa=='B']
+gradesGroupB = gradesGroupB[!is.na(gradesGroupB)]
+```
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+summary(gradesGroupB)
+descriptive_statistics(gradesGroupB, "Grades - Group  B")
+```
+
+```{r}
+par(mfrow=c(1,2))
+hist(gradesGroupB, plot = TRUE, main = "Grades - Group B")
+boxplot(gradesGroupB, main = "Grades - Group B", xlab="Grades - Group B") 
+```
+
+
+## Income
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+income = data$zarobki
+income = income[!is.na(income)]
+```
+
+### Ungroupped data
+```{r comment=NA, echo=TRUE, warning=FALSE}
+summary(income)
+descriptive_statistics(income, "Income variable for all samples")
+```
+
+```{r}
+par(mfrow=c(1,2))
+hist(income, plot = TRUE, main = "Income")
+boxplot(income, main = "Income", xlab="Income") 
+```
+
+### Removing outliers
+Since values 40 000 and 12 000 are outstanding ones, we are redoing the descriptive analysis without them
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+income = income[!is.na(income) & income != 40000 & income != 12000]
+```
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+summary(income)
+descriptive_statistics(income, "Income variable without outliers")
+```
+
+```{r}
+par(mfrow=c(1,2))
+hist(income, plot = TRUE, main = "Income (no outliers)")
+boxplot(income, main = "Income (no outliers)", xlab="Income (no outliers)") 
+```
+
+### Group A
+```{r comment=NA, echo=TRUE, warning=FALSE}
+incomeGroupA = data$zarobki[data$grupa=='A']
+incomeGroupA = incomeGroupA[!is.na(incomeGroupA)]
+
+summary(incomeGroupA)
+descriptive_statistics(incomeGroupA, "Income - Group A")
+```
+
+```{r}
+par(mfrow=c(1,2))
+hist(incomeGroupA, plot = TRUE, main = "Income - Group A")
+boxplot(incomeGroupA, main = "Income - Group A", xlab="Income - Group A") 
+```
+
+
+### Group B
+```{r comment=NA, echo=TRUE, warning=FALSE}
+incomeGroupB = data$zarobki[data$grupa=='B']
+incomeGroupB = incomeGroupB[!is.na(incomeGroupB)]
+
+summary(incomeGroupB)
+descriptive_statistics(incomeGroupB, "Income - Group B")
+```
+
+```{r}
+par(mfrow=c(1,2))
+hist(incomeGroupB, plot = TRUE, main = "Income - Group B")
+boxplot(incomeGroupB, main = "Income - Group B", xlab="Income - Group B") 
+```
+
+# Correlation check
+For this excercise, we are considering ungroupped data entries.
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+incomeWithoutOutliers = data[!data$zarobki %in% c(40000, 12000), ]
+```
+
+## IQ vs Income 
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+plot(incomeWithoutOutliers$iloraz_intelig, incomeWithoutOutliers$zarobki, main = "IQ vs Income", xlab = "IQ", ylab = "Income")
+```
+
+## Grades vs Income
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+plot(incomeWithoutOutliers$oceny, incomeWithoutOutliers$zarobki, main = "Grades vs Income", xlab = "Grades", ylab = "Income")
+```
+
+## IQ vs Grades
+
+```{r comment=NA, echo=TRUE, warning=FALSE}
+plot(incomeWithoutOutliers$iloraz_intelig, incomeWithoutOutliers$oceny, main = "IQ vs Grades", xlab="IQ", ylab = "Grades")
+```
+
+From the plots above we can infer that there is no correlation between any of the variables. Please keep in mind that the groupping variable was not used here.

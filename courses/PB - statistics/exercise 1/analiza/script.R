@@ -1,9 +1,9 @@
 # te muszą być zainstalowane: 
-# install.packages("gdata", "e1071")
-# install.packages("e1071")
+install.packages("gdata", "e1071")
+install.packages("e1071")
 
-# library(gdata)
-# library(e1071)
+library(gdata)
+library(e1071)
 # library(dplyr)
 dataZarobki = read.xls('W1_OcenyIlorazIntelZarobki.xlsx')
 
